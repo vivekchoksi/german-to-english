@@ -23,6 +23,7 @@ Machine translator from German to English, built as a class project for CS124 at
         - Difference between written and spoken verb conjugation
         - Gender stem changes in dative phrases (??)   
         - Verb tense; in particular, German has no present continuous tense
+        - Disambiguate many-to-many relationships between prepositions (see the table here: http://german.about.com/library/verbs/blverb_prep01.htm) 
 3. Decide which programming language to use
   * Python
 4. Find 15 sentences to translate
