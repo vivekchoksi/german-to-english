@@ -14,6 +14,7 @@ Machine translator from German to English, built as a class project for CS124 at
         - Python NLP tools: http://www.nltk.org/
         - Part-of-speech tagger for German: http://www.clips.ua.ac.be/pages/pattern-de
   * What post-processing strategies to implement? (we need 6-10)
+        - Good resource on German grammar quirks: http://esl.fis.edu/grammar/langdiff/german.htm
         - Verb order (verb precedes subject in questions)
         - Verb order (sometimes verb goes at end of sentence)
         - Verb stemming to deal with conjugations
