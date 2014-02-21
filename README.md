@@ -4,13 +4,15 @@ german-to-english
 Machine translator from German to English, built as a class project for CS124 at Stanford. 
 
 
-## Notes from first meeting (2/20/14)
+### Notes from first meeting (2/20/14)
 
-### Agenda
+#### Agenda
 1. Decide language which to translate to English
   * German
 2. Brainstorm approach
   * What helper tools to use? Locate off-the-shelf tool kits
+        - Python NLP tools: http://www.nltk.org/
+        - Part-of-speech tagger for German: http://www.clips.ua.ac.be/pages/pattern-de
   * What post-processing strategies to implement? (we need 6-10)
         - Verb order (verb precedes subject in questions)
         - Verb order (sometimes verb goes at end of sentence)
