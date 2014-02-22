@@ -3,10 +3,16 @@ german-to-english
 
 Machine translator from German to English, built as a class project for CS124 at Stanford. 
 
+### Notes from second meeting (2/21/14)
+
+#### Agenda
+1. Review 10 training sentences and finalize 6-10 post-processing strategies
+2. Get Python toolkit set up on everyone's computer
+3. Plan framework for machine translator
+4. Divide up work to implement framework
 
 ### Notes from first meeting (2/20/14)
 
-#### Agenda
 1. Decide language which to translate to English
   * German
 2. Brainstorm approach
