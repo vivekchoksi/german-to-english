@@ -10,6 +10,7 @@ class MachineTranslator:
       pass
 
     def pre_process(self, sentence):
+      """Takes in a raw German sentence and returns a pre-processed German sentence."""
       pass
 
   class PostProcessor:
@@ -17,6 +18,7 @@ class MachineTranslator:
       pass
 
     def post_process(self, sentence):
+      """Takes in an English sentence and returns a post-processed English sentence."""
       pass
 
   def translate(self, sentence):
