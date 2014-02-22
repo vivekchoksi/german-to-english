@@ -10,6 +10,7 @@ Machine translator from German to English, built as a class project for CS124 at
 2. Get Python toolkit set up on everyone's computer
 3. Plan framework for machine translator
 4. Divide up work to implement framework
+5. Begin creating mini-dictionary
 
 ### Notes from first meeting (2/20/14)
 
