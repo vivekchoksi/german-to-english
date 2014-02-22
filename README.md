@@ -11,6 +11,10 @@ Machine translator from German to English, built as a class project for CS124 at
 3. Plan framework for machine translator
 4. Divide up work to implement framework
 5. Begin creating mini-dictionary
+ 
+TODO: 
+Watch word meaning and similarity videos
+
 
 ### Notes from first meeting (2/20/14)
 
