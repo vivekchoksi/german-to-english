@@ -38,6 +38,8 @@ Watch word meaning and similarity videos
         - Verb tense; in particular, German has no present continuous tense
         - Disambiguate many-to-many relationships between prepositions (see the table here: http://german.about.com/library/verbs/blverb_prep01.htm) 
         - Don't translate names (e.g. Mr. Lahm should not become Mr. Lame !)
+        - Disambiguating nouns vs conjugated verbs (e.g. Ich glaube --> I believe, not 'I faith')
+        - Negation comes after verb in German, at the end of a clause. In English, it should come before the verb.
 3. Decide which programming language to use
   * Python
 4. Find 15 sentences to translate
