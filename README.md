@@ -37,6 +37,7 @@ Watch word meaning and similarity videos
         - Gender stem changes in dative phrases (??)   
         - Verb tense; in particular, German has no present continuous tense
         - Disambiguate many-to-many relationships between prepositions (see the table here: http://german.about.com/library/verbs/blverb_prep01.htm) 
+        - Don't translate names (e.g. Mr. Lahm should not become Mr. Lame !)
 3. Decide which programming language to use
   * Python
 4. Find 15 sentences to translate
