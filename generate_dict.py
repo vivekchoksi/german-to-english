@@ -14,8 +14,9 @@ word_translator = WordTranslator(from_lang='de', to_lang='en') #gets one transla
 '''This outputs all translated words into dictionary.txt. To load:
 		dictionary = eval(open('dictionary.txt').read())
 
-		All words have dictionary[word]['translations'] = list of translations
+		All words have dictionary[word]['box_translation'] = box translation
 		Some words have dictionary[word]['part_of_speech'] = str part of speech
+		and				dictionary[word]['alt_translations'] = list of alternate translations
 '''
 def main(dev_filename, test_filename):
 	words = []
@@ -31,14 +32,13 @@ def main(dev_filename, test_filename):
 	dictionary = defaultdict(dict)
 
 	for word in words:
-		
+		dictionary[word.lower()]['box_translation'] = word_translator.translate(word)
 		try:
 			part_of_speech, english_translations = translator.translate(word)
 			dictionary[word.lower()]['part_of_speech'] = part_of_speech
-			dictionary[word.lower()]['translations'] = english_translations
+			dictionary[word.lower()]['alt_translations'] = english_translations
 		except Exception, e:
-			english_word = word_translator.translate(word)
-			dictionary[word.lower()]['translations'] = [english_word]
+			pass
 
 	dictionary = dict(dictionary) # so it prints properly
 	with codecs.open('dictionary.txt', 'w', encoding='utf-8') as f:

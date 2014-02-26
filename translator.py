@@ -43,9 +43,10 @@ class Translator:
         formatted_content = re.sub('true', 'True', formatted_content)
         formatted_content = re.sub('false', 'False', formatted_content)
         content_list = ast.literal_eval(formatted_content)
-
+        
         part_of_speech = content_list[1][0][0]
         translations = content_list[1][0][1]
+
         return part_of_speech, translations
 
     def _get_json5_from_google(self, source):
