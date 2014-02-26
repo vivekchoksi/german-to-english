@@ -1,6 +1,6 @@
 import sys
 import nltk
-
+import pattern.de
 dictionary = eval(open('dictionary.txt').read())
 
 class MachineTranslator:
@@ -34,6 +34,9 @@ class MachineTranslator:
     with open(filename) as f:
       for sentence in f:
         sentence_tokens = nltk.word_tokenize(sentence)
+        tagged_sentence = pattern.de.parse(sentence)
+        tagged_sentence_tokens = nltk.word_tokenize(tagged_sentence)
+        # TODO: something with the tagged_sentence_tokens
         result.append(sentence_tokens)
     return result
 

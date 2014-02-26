@@ -35,5 +35,8 @@ nosetests.xml
 .project
 .pydevproject
 
-#virtualenv
+#directories
 venv/
+stanford-postagger-full-2014-01-04/
+POSTagger/
+pattern-2.6/
