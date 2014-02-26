@@ -40,3 +40,4 @@ venv/
 stanford-postagger-full-2014-01-04/
 POSTagger/
 pattern-2.6/
+.idea/
