@@ -9,6 +9,7 @@ Machine translator from German to English, built as a class project for CS124 at
 1. Review 10 training sentences and finalize 6-10 post-processing strategies
 2. Find tools and get Python toolkit set up on everyone's computer
   * Parallel corpus: http://people.csail.mit.edu/koehn/publications/de-news/
+  * English language model: nltk.corpus.brown
 3. Plan framework for machine translator
 4. Divide up work to implement framework
 5. Begin creating mini-dictionary
