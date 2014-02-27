@@ -4,6 +4,7 @@ import pattern.de
 import re
 from collections import Counter
 dictionary = eval(open('dictionary.txt').read())
+brown_bigrams = eval(open('bigram_counts.txt').read())
 
 class MachineTranslator:
 
@@ -123,8 +124,13 @@ class MachineTranslator:
       ''' This initialization will be slow because it processes the large
           nltk Brown corpus '''
       self.language_model = [word.lower() for word in nltk.corpus.brown.words()]
-      self.bigram_counts = {}
-      self._get_bigram_counts()
+      self.bigram_counts = brown_bigrams
+      # self._get_bigram_counts()
+
+      # Enforce that all tokens only contain 1 word
+      for index, sentence in enumerate(tokenized_translations):
+        stringed = " ".join(tokenized_translations[index])
+        tokenized_translations[index] = stringed.split()
       self.tokenized_translations = tokenized_translations
 
     def post_process(self):
@@ -133,6 +139,7 @@ class MachineTranslator:
         self._remove_extra_articles(tokenized_sentence)
       return self.tokenized_translations
 
+    # Currently unused. Use code like this to build your own language model.
     def _get_bigram_counts(self):
       ''' Get counts for all bigrams in the brown corpus. '''
       brown_lowercase = nltk.bigrams(self.language_model)
@@ -149,7 +156,7 @@ class MachineTranslator:
           if pruned_bigram in self.bigram_counts:
             if raw_bigram not in self.bigram_counts:
               del tokenized_sentence[i]
-            elif self.bigram_counts[pruned_bigram] / self.bigram_counts > 5: # TODO: tune this
+            elif float(self.bigram_counts[pruned_bigram]) / float(self.bigram_counts[raw_bigram]) > 2: # TODO: tune this
               del tokenized_sentence[i]
 
 
