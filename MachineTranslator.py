@@ -39,6 +39,7 @@ class MachineTranslator:
 
     def _pre_process_sentence(self, clauses, pos_map):
       if len(sentence_tokens) == 0: return
+      self._reorder_verb_subject_in_second_position(sentence_tokens)
       self._change_perfect_verb_order(clauses, pos_map)
 
     def _POS_map(self, sentence):
@@ -74,6 +75,31 @@ class MachineTranslator:
       result.append(sentence_tokens[last:len(sentence_tokens)])
 
       return result
+
+
+    # NOTE method under construction... (Chris)
+    def _reorder_verb_subject_in_second_position(self, clause_tokens):
+      # when some form of time is in the beginning of the sentence: "heute habe ich meine Hausaufgaben gemacht" -> "I did my homework today"
+      for i in range(1, len(clause_tokens)):
+        if self._is_verb(clause_tokens[i]):
+          if self._is_pronoun(clause_tokens[i-1]): 
+            break
+          if self._is_noun(clause_tokens[i-1]):
+            if self._is_pronoun(clause_tokens[i+1]): 
+              verb = clause_tokens[i]
+              pronoun = clause_tokens[i+1]
+              del clause_tokens[i+1]
+              del clause_tokens[i]
+              clause_tokens.insert(0, pronoun)
+              clause_tokens.insert(1, verb)
+              break
+          else:
+            for j in range(i+1, len(clause_tokens)):
+              if self._is_noun(clause_tokens[j]) or self._is_pronoun(clause_tokens[j]):
+                verb = clause_tokens[i]
+                del clause_tokens[i]
+                clause_tokens.insert(j, verb)
+                break
 
 
     # NOTE: method under construction...
@@ -125,6 +151,12 @@ class MachineTranslator:
 
     def _is_verb(self, word):
       return (dictionary[word.lower()].get('part_of_speech', None) == 'verb') or ('VB' in pattern.de.parse(word))
+
+    def _is_noun(self, word):
+      return (dictionary[word.lower()].get('part_of_speech', None) == 'noun') or ('NN' in pattern.de.parse(word))
+
+    def _is_pronoun(self, word):
+      return (dictionary[word.lower()].get('part_of_speech', None) == 'pronoun') or ('PRP' in pattern.de.parse(word))
 
   class PostProcessor:
     def __init__(self, tokenized_translations):

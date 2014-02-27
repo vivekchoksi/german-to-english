@@ -96,4 +96,6 @@
           'box_translation': u'their',
           'part_of_speech': 'pronoun'},
 
-          
+'einigen': {'alt_translations': ['unify', 'unite'],
+             'box_translation': u'some',
+             'part_of_speech': 'adjective'},
