@@ -72,8 +72,9 @@ class MachineTranslator:
 
         is_conjuction = (word in self.GERMAN_CONJUNCTIONS) or ('WDT' in pos_map[word])
         if (word in (':', ';')) or (is_conjuction and is_prev_comma):
-          result.append(sentence_tokens[last:i])
-          last = i
+          result.append(sentence_tokens[last:i-1])
+          result.append(sentence_tokens[i:i+1])
+          last = i+1
       result.append(sentence_tokens[last:len(sentence_tokens)])
 
       return result
