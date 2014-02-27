@@ -45,19 +45,27 @@ class MachineTranslator:
       self._change_perfect_verb_order(sentence_tokens)
 
     # NOTE method under construction... (Chris)
-    def _reorder_verb_subject_in_second_position(self, sentence_tokens):
+    def _reorder_verb_subject_in_second_position(self, clause_tokens):
       # when some form of time is in the beginning of the sentence: "heute habe ich meine Hausaufgaben gemacht" -> "I did my homework today"
-      for i in range(1, len(sentence_tokens)):
-        if self._is_verb(sentence_tokens[i]) and (self._is_noun(sentence_tokens[i-1])) or self._is_pronoun(sentence_tokens[i-1]):
-          # case where verb is in the right position with reference to noun
-          break
-        else:
-          if self._is_verb(sentence_tokens[i]):
-            for j in range(i+1, len(sentence_tokens)):
-              if self._is_noun(sentence_tokens[j]) or self._is_pronoun(sentence_tokens[j]):
-                verb = sentence_tokens[i]
-                del sentence_tokens[i]
-                sentence_tokens.insert(j, verb)
+      for i in range(1, len(clause_tokens)):
+        if self._is_verb(clause_tokens[i]):
+          if self._is_pronoun(clause_tokens[i-1]): 
+            break
+          if self._is_noun(clause_tokens[i-1]):
+            if self._is_pronoun(clause_tokens[i+1]): 
+              verb = clause_tokens[i]
+              pronoun = clause_tokens[i+1]
+              del clause_tokens[i+1]
+              del clause_tokens[i]
+              clause_tokens.insert(0, pronoun)
+              clause_tokens.insert(1, verb)
+              break
+          else:
+            for j in range(i+1, len(clause_tokens)):
+              if self._is_noun(clause_tokens[j]) or self._is_pronoun(clause_tokens[j]):
+                verb = clause_tokens[i]
+                del clause_tokens[i]
+                clause_tokens.insert(j, verb)
                 break
 
 

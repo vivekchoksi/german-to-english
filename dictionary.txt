@@ -163,7 +163,7 @@
                  'part_of_speech': 'verb'},
  'einigen': {'alt_translations': ['unify', 'unite'],
              'box_translation': u'some',
-             'part_of_speech': 'verb'},
+             'part_of_speech': 'adjective'},
  'enth\xc3\xa4lt': {'alt_translations': ['contain',
                                          'include',
                                          'embody',
