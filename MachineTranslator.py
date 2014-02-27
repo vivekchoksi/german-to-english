@@ -181,6 +181,9 @@ class MachineTranslator:
 
     ARTICLES_FOLLOWING_OF = ["the", "this"]
 
+    # The top 2 translations for the word 'von'
+    VON_TRANSLATION_CANDIDATES = dictionary['von'].get('alt_translations', None)[0:2]
+
     def __init__(self, tokenized_translations):
       ''' This initialization will be slow because it processes the large
           nltk Brown corpus '''
@@ -199,14 +202,38 @@ class MachineTranslator:
       '''Takes in a translated, tokenized English corpus and returns a post-processed, tokenized English corpus.'''
       for tokenized_sentence in self.tokenized_translations:
         self._remove_extra_articles(tokenized_sentence)
+        self._distinguish_of_from(tokenized_sentence)
         self._add_missing_of(tokenized_sentence)
         tokenized_sentence[0] = tokenized_sentence[0].capitalize()
       return self.tokenized_translations
 
+    def _distinguish_of_from(self, tokenized_sentence):
+      ''' Disambiguate whether the word 'von' should translate to 'of' or 'from' '''
+      sentence_length = len(tokenized_sentence) - 1
+      for i in range(2, sentence_length):
+        if tokenized_sentence[i] in self.VON_TRANSLATION_CANDIDATES:
+          other_candidate = self.VON_TRANSLATION_CANDIDATES[0] \
+            if tokenized_sentence[i] == self.VON_TRANSLATION_CANDIDATES[1] else self.VON_TRANSLATION_CANDIDATES[1]
+
+          # Transform raw_trigram and new_trigram from lists into strings
+          raw_trigram = list(tokenized_sentence[i - 2 : i + 1])
+          raw_trigram = [word.lower() for word in raw_trigram]
+          new_trigram = list(raw_trigram) # create a copy
+          new_trigram[2] = other_candidate
+          raw_trigram = " ".join(raw_trigram)
+          new_trigram = " ".join(new_trigram)
+
+          # If the new translation candidate is significantly more probable, then change the translation
+          if new_trigram in self.trigram_counts:
+            if raw_trigram not in self.trigram_counts:
+              tokenized_sentence[i] = other_candidate
+            elif float(self.trigram_counts[new_trigram]) / float(self.trigram_counts[raw_trigram]) > 2: # TODO: tune this
+              tokenized_sentence[i] = other_candidate
+
     def _remove_extra_articles(self, tokenized_sentence):
       ''' Remove extra instances of the word "the" '''
-      # TODO: if 'the' is deleted twice, make sure there is no index out of bounds error
-      for i in range(1, len(tokenized_sentence) - 1):
+      sentence_length = len(tokenized_sentence) - 1
+      for i in range(1, sentence_length):
         if tokenized_sentence[i] in self.ARTICLES_TO_PRUNE:
           raw_bigram = tokenized_sentence[i].lower() + " " + tokenized_sentence[i + 1].lower()
           pruned_bigram = tokenized_sentence[i - 1].lower() + " " + tokenized_sentence[i + 1].lower()
@@ -214,8 +241,10 @@ class MachineTranslator:
           # If the new form (i.e. without 'and') is significantly more probable, then change the translation
           if pruned_bigram in self.bigram_counts:
             if raw_bigram not in self.bigram_counts:
+              sentence_length -= 1
               del tokenized_sentence[i]
             elif float(self.bigram_counts[pruned_bigram]) / float(self.bigram_counts[raw_bigram]) > 2: # TODO: tune this
+              sentence_length -= 1
               del tokenized_sentence[i]
 
     def _add_missing_of(self, tokenized_sentence):
