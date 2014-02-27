@@ -1,0 +1,71 @@
+ 'verteilt': {'alt_translations': ['distributed', 'straggling'],
+              'box_translation': u'distributed',
+              'part_of_speech': 'verb'},
+
+'muss': {'alt_translations': ['must'],
+          'box_translation': u'must',
+          'part_of_speech': 'verb'},
+
+'jahrmarkt': {'alt_translations': ['fair'],
+               'box_translation': u'fair',
+               'part_of_speech': 'noun'},
+
+'jahren': {'alt_translations': ['years'],
+            'box_translation': u'years',
+            'part_of_speech': 'noun'},
+
+'hochschule': {'alt_translations': ['college'],
+                'box_translation': u'college',
+                'part_of_speech': 'noun'},
+
+'f\xc3\xbchrung': {'alt_translations': ['leadership',
+                                         'guide',
+                                         'guided tour',
+                                         'management',
+                                         'guidance',
+                                         'captaincy',
+                                         'direction',
+                                         'command',
+                                         'vanguard',
+                                         'commanders',
+                                         'directors',
+                                         'conduct',
+                                         'guideway'],
+                    'box_translation': u'leadership',
+                    'part_of_speech': 'noun'},
+
+'feste': {'alt_translations': ['Festivals'],
+           'box_translation': u'Festivals',
+           'part_of_speech': 'noun'},
+
+'entwickelt': {'box_translation': u'developed', 
+                'part_of_speech': 'verb'},
+
+'einer': {'alt_translations': ['a', 'an', 'one'],
+           'box_translation': u'a',
+           'part_of_speech': 'article'},
+
+ 'eine': {'alt_translations': ['a', 'an', 'one'],
+          'box_translation': u'a',
+          'part_of_speech': 'article'},
+
+ 'einem': {'alt_translations': ['a', 'an', 'one'],
+           'box_translation': u'a',
+           'part_of_speech': 'article'},
+
+
+'dieses': {'alt_translations': ['this'],
+            'box_translation': u'this',
+            'part_of_speech': 'article'},
+
+'bis': {'alt_translations': ['until',
+                              'to',
+                              'up to',
+                              'by',
+                              'till',
+                              'up till'],
+         'box_translation': u'to',
+         'part_of_speech': 'preposition'},
+
+'betrieben': {'box_translation': u'operated', 'part_of_speech': 'verb'},
+

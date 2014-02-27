@@ -9,7 +9,7 @@ class MachineTranslator:
   class PreProcessor:
 
     # List of words of form "have" or "was/is". (static class variable)
-    perfect_verb_forms = pattern.de.lexeme('haben') + pattern.de.lexeme('werden')
+    perfect_verb_forms = pattern.de.lexeme('haben') + pattern.de.lexeme('werden') + pattern.de.lexeme('sein')
 
     def __init__(self, infile):
       self.infile = infile
