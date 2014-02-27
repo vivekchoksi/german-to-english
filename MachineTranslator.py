@@ -74,17 +74,19 @@ class MachineTranslator:
       last_word_index = self._get_last_word_index(sentence_tokens)
       clause_last_word = sentence_tokens[last_word_index]
 
+      #if sentence_tokens[0] == 'Ich': import pdb; pdb.set_trace()
+
       for i, word1 in enumerate(sentence_tokens):
         if word1 in self.PERFECT_VERB_FORMS:
           for j, word2 in enumerate(sentence_tokens[i+1:]):
             j += i+1
-            if word2 in self.GERMAN_CONJUNCTIONS and sentence_tokens[j-1] == ',': break
+            if word2 in self.GERMAN_CONJUNCTIONS and (word2 == ':' or sentence_tokens[j-1] == ','): break
             if self._is_verb(word2):
-
+              
               del sentence_tokens[j]
               # Delete unnecessary reflexive word
-              if sentence_tokens[i + 1] in self.REFLEXIVE_WORDS: 
-                del sentence_tokens[i + 1]
+              # if sentence_tokens[i + 1] in self.REFLEXIVE_WORDS: 
+              #   del sentence_tokens[i + 1]
               sentence_tokens.insert(i + 1, word2)
 
       # # Check if sentence ends with verb. Is there a better way to do this?
