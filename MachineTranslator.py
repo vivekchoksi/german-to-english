@@ -38,7 +38,7 @@ class MachineTranslator:
       return result
 
     def _pre_process_sentence(self, clauses, pos_map):
-      if len(sentence_tokens) == 0: return
+      if len(clauses) == 0: return
       self._reorder_verb_subject_in_second_position(clauses, pos_map)
       self._change_perfect_verb_order(clauses, pos_map)
 
@@ -81,7 +81,7 @@ class MachineTranslator:
       return [word for clause in clauses for word in clause]
 
     # NOTE method under construction... (Chris)
-    def _reorder_verb_subject_in_second_position(self, clauses):
+    def _reorder_verb_subject_in_second_position(self, clauses, pos_map):
       # when some form of time is in the beginning of the sentence: "heute habe ich meine Hausaufgaben gemacht" -> "I did my homework today"
       for clause_tokens in clauses:
         for i in range(1, len(clause_tokens)):
