@@ -91,3 +91,9 @@
                                 'by dint of'],
            'box_translation': u'through',
            'part_of_speech': 'preposition'},
+
+ 'ihre': {'alt_translations': ['her', 'their', 'hers', 'theirs'],
+          'box_translation': u'their',
+          'part_of_speech': 'pronoun'},
+
+          
