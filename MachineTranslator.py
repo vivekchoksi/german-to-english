@@ -2,6 +2,7 @@ import sys
 import nltk
 import pattern.de
 import re
+from collections import Counter
 dictionary = eval(open('dictionary.txt').read())
 
 class MachineTranslator:
@@ -48,21 +49,21 @@ class MachineTranslator:
       return dictionary[word.lower()].get('box_translation', []) + dictionary[word.lower()].get('alt_translations', [])
 
     #TODO: finish implementing this method
-    def _specify_pronoun_gender(self, sentence_tokens):
-      ''' Find ambiguous pronouns and tag them with their desired English translation. '''
-      for index, word in enumerate(sentence_tokens):
-        if dictionary[word.lower()].get('part_of_speech', None) == 'pronoun':
-          candidates = set(self.get_all_translations(word))
-
-          if len(candidates) == 1: # There's no ambiguity
-            return
-
-          # Look for the next pronoun and see if it is gendered. (If so, it can help disambiguate.)
-          gender = self._get_next_pronoun(sentence_tokens[index + 1:])
-
-          # Find the gender of all the english translation candidates
-          # Get next pronoun and get gender of all english candidates
-          # If gender is clear, then disambiguate first pronoun
+    #def _specify_pronoun_gender(self, sentence_tokens):
+    #  ''' Find ambiguous pronouns and tag them with their desired English translation. '''
+    #  for index, word in enumerate(sentence_tokens):
+    #    if dictionary[word.lower()].get('part_of_speech', None) == 'pronoun':
+    #      candidates = set(self.get_all_translations(word))
+    #
+    #      if len(candidates) == 1: # There's no ambiguity
+    #        return
+    #
+    #      # Look for the next pronoun and see if it is gendered. (If so, it can help disambiguate.)
+    #      gender = self._get_next_pronoun(sentence_tokens[index + 1:])
+    #
+    #      # Find the gender of all the english translation candidates
+    #      # Get next pronoun and get gender of all english candidates
+    #      # If gender is clear, then disambiguate first pronoun
 
     # NOTE: method under construction...
     # TODO: Need to find reliable way of identifying perfect verb at end of sentence
@@ -115,12 +116,41 @@ class MachineTranslator:
       return (dictionary[word.lower()].get('part_of_speech', None) == 'verb') or ('VB' in pattern.de.parse(word))
 
   class PostProcessor:
+
+    ARTICLES_TO_PRUNE = ["the"]
+
     def __init__(self, tokenized_translations):
+      ''' This initialization will be slow because it processes the large
+          nltk Brown corpus '''
+      self.language_model = [word.lower() for word in nltk.corpus.brown.words()]
+      self.bigram_counts = {}
+      self._get_bigram_counts()
       self.tokenized_translations = tokenized_translations
 
     def post_process(self):
       '''Takes in a translated, tokenized English corpus and returns a post-processed, tokenized English corpus.'''
+      for tokenized_sentence in self.tokenized_translations:
+        self._remove_extra_articles(tokenized_sentence)
       return self.tokenized_translations
+
+    def _get_bigram_counts(self):
+      ''' Get counts for all bigrams in the brown corpus. '''
+      brown_lowercase = nltk.bigrams(self.language_model)
+      bigram_list = [" ".join(bi) for bi in brown_lowercase]
+      self.bigram_counts = Counter(bigram_list)
+
+    def _remove_extra_articles(self, tokenized_sentence):
+      ''' Remove extra instances of the word "the" '''
+      sentence_lower = [word.lower() for word in tokenized_sentence]
+      for i in range(1, len(tokenized_sentence) - 1):
+        if tokenized_sentence[i] in self.ARTICLES_TO_PRUNE:
+          raw_bigram = tokenized_sentence[i].lower() + " " + tokenized_sentence[i + 1].lower()
+          pruned_bigram = tokenized_sentence[i - 1].lower() + " " + tokenized_sentence[i + 1].lower()
+          if pruned_bigram in self.bigram_counts:
+            if raw_bigram not in self.bigram_counts:
+              del tokenized_sentence[i]
+            elif self.bigram_counts[pruned_bigram] / self.bigram_counts > 5: # TODO: tune this
+              del tokenized_sentence[i]
 
 
   def __init__(self, infile, outfile):
