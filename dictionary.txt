@@ -253,7 +253,7 @@
                                     'inverse'],
                'box_translation': u'contrary',
                'part_of_speech': 'noun'},
- 'geheimdienste': {'box_translation': u'intelligence'},
+ 'geheimdienste': {'box_translation': u'secret services'},
  'gemacht': {'alt_translations': ['made'],
              'box_translation': u'made',
              'part_of_speech': 'adjective'},

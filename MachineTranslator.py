@@ -41,6 +41,7 @@ class MachineTranslator:
       if len(clauses) == 0: return
       self._reorder_verb_subject_in_second_position(clauses, pos_map)
       self._change_perfect_verb_order(clauses, pos_map)
+      # self._reorder_adjective_phrases(clauses, pos_map)
 
 
     def _POS_map(self, sentence):
@@ -106,16 +107,28 @@ class MachineTranslator:
                   del clause_tokens[i]
                   clause_tokens.insert(j, verb)
                   break
+      print clauses
 
-    # def _reorder_adjective_phrases(self, clauses, pos_map):
-    #   for clause in clauses:
-    #     clause_string = " ".join(clause)
-    #     # print clause_string
-    #     tree = pattern.de.parsetree(clause_string)
-    #     for chunk in tree.chunks:
-    #       if "ADJP" in chunk.type:
-    #         for word in chunk.words:
-    #           for gram in clause:
+    def _reorder_adjective_phrases(self, clauses, pos_map):
+      for clause in clauses:
+        clause_string = " ".join(clause)
+        # print clause_string
+        tree = pattern.de.parsetree(clause_string)
+        for index, chunk in enumerate(tree[0].chunks):
+          if "ADJP" in chunk.type:
+            print chunk
+            index = 0
+            for i, word in enumerate(clause):
+              if word == chunk.words[0]:
+                index = i 
+                for i in range(0, len(chunk.words)):
+                  del clause[index+i]
+            for i in range(0, index):
+              if self._is_verb(clause[i]):
+                for word in chunk.words:
+                  clause.insert(i-1, word)
+
+              
 
               # TODO: move words
     # NOTE: method under construction...
