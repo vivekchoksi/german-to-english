@@ -55,9 +55,7 @@ class MachineTranslator:
       last_word_parsed = pattern.de.parse(last_word_token)
 
       # Check if sentence ends with verb. Is there a better way to do this?
-      if (('part_of_speech' in dictionary[last_word_token.lower()].keys() and
-              dictionary[last_word_token.lower()]['part_of_speech'] == 'verb') or
-              'VB' in last_word_parsed):
+      if (dictionary[last_word_token.lower()].get('part_of_speech', None) == 'verb') or ('VB' in last_word_parsed):
         for i in reversed(range(0, len(sentence_tokens) - 1)):
           # Insert the perfect verb after a 'have/was'-form verb.
           if sentence_tokens[i] in self.PERFECT_VERB_FORMS:
