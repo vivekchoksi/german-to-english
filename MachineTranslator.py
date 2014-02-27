@@ -12,6 +12,9 @@ class MachineTranslator:
     # List of words of form "have" or "was/is". (static class variable)
     PERFECT_VERB_FORMS = pattern.de.lexeme('haben') + pattern.de.lexeme('werden') + pattern.de.lexeme('sein')
 
+    # List of time words, like "today", "tomorrow"
+    TIME_WORDS = ['heute', 'morgen', 'gestern', 'nächstes', 'letztes']
+
     # List of reflexive words that can be omitted. (static class variable)
     REFLEXIVE_WORDS = ['sich', 'dich', 'euch', 'uns', 'mich', 'mir', 'dir']
 
@@ -39,6 +42,14 @@ class MachineTranslator:
       if len(sentence_tokens) == 0:
         return
       self._change_perfect_verb_order(sentence_tokens)
+      self._reorder_verb_subject_in_second_position(sentence_tokens)
+
+    # NOTE method under construction... (Chris)
+    def _reorder_verb_subject_in_second_position(self, sentence_tokens):
+      # when some form of time is in the beginning of the sentence: "heute habe ich meine Hausaufgaben gemacht" -> "I did my homework today"
+      if sentence_tokens[0] in TIME_WORDS:
+        for i in range(1, len(sentence_tokens)):
+          if sentence_tokens[i]
 
     # NOTE: method under construction...
     # TODO: Need to find reliable way of identifying perfect verb at end of sentence
@@ -62,7 +73,7 @@ class MachineTranslator:
             del sentence_tokens[last_word_index]
             # Delete unnecessary reflexive word
             if sentence_tokens[i + 1] in self.REFLEXIVE_WORDS:
-              del sentence_tokens[i + 1]
+              del sentence_tokens[i + 1]  
 
             sentence_tokens.insert(i + 1, last_word_token)
 
