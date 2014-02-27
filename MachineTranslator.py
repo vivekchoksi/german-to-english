@@ -40,6 +40,27 @@ class MachineTranslator:
         return
       self._change_perfect_verb_order(sentence_tokens)
 
+    def _get_all_translations(self, word):
+      ''' Returns the box and alt translations of a word as a list '''
+      return dictionary[word.lower()].get('box_translation', []) + dictionary[word.lower()].get('alt_translations', [])
+
+    #TODO: finish implementing this method
+    def _specify_pronoun_gender(self, sentence_tokens):
+      ''' Find ambiguous pronouns and tag them with their desired English translation. '''
+      for index, word in enumerate(sentence_tokens):
+        if dictionary[word.lower()].get('part_of_speech', None) == 'pronoun':
+          candidates = set(self.get_all_translations(word))
+
+          if len(candidates) == 1: # There's no ambiguity
+            return
+
+          # Look for the next pronoun and see if it is gendered. (If so, it can help disambiguate.)
+          gender = self._get_next_pronoun(sentence_tokens[index + 1:])
+
+          # Find the gender of all the english translation candidates
+          # Get next pronoun and get gender of all english candidates
+          # If gender is clear, then disambiguate first pronoun
+
     # NOTE: method under construction...
     # TODO: Need to find reliable way of identifying perfect verb at end of sentence
     def _change_perfect_verb_order(self, sentence_tokens):
