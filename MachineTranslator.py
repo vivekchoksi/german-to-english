@@ -33,14 +33,15 @@ class MachineTranslator:
           sentence_tokens = nltk.word_tokenize(sentence)
           pos_map = self._POS_map(sentence)
           clauses = self._clausify(sentence_tokens, pos_map)
-          self._pre_process_sentence(sentence_tokens, clauses, pos_map)    
-          result.append(sentence_tokens)
+          self._pre_process_sentence(clauses, pos_map)    
+          result.append(self._declausify(clauses))
       return result
 
-    def _pre_process_sentence(self, sentence_tokens, clauses, pos_map):
+    def _pre_process_sentence(self, clauses, pos_map):
       if len(sentence_tokens) == 0: return
       self._reorder_verb_subject_in_second_position(clauses, pos_map)
-      self._change_perfect_verb_order(sentence_tokens)
+      self._change_perfect_verb_order(clauses, pos_map)
+
 
     def _POS_map(self, sentence):
       result = {}
@@ -76,6 +77,8 @@ class MachineTranslator:
 
       return result
 
+    def _declausify(self, clauses):
+      return [word for clause in clauses for word in clause]
 
     # NOTE method under construction... (Chris)
     def _reorder_verb_subject_in_second_position(self, clauses):
@@ -103,8 +106,6 @@ class MachineTranslator:
                   break
 
 
-    # NOTE: method under construction...
-    # TODO: Need to find reliable way of identifying perfect verb at end of sentence
     def _change_perfect_verb_order(self, clauses, pos_map):
       ''' Identify German sentences of the form 'The city was in 1170 taken.' and move
           the perfect verb to the correct place in the sentence. '''
@@ -113,35 +114,18 @@ class MachineTranslator:
       if sentence_tokens[-1] == '?':
         return
 
-      last_word_index = self._get_last_word_index(sentence_tokens)
-      clause_last_word = sentence_tokens[last_word_index]
+      for sentence_tokens in clauses:
+        for i, word1 in enumerate(sentence_tokens):
+          if word1 in self.PERFECT_VERB_FORMS:
+            for j, word2 in enumerate(sentence_tokens[i+1:]):
+              j += i+1
+              if self._is_verb(word2, pos_map):              
+                del sentence_tokens[j]
+                sentence_tokens.insert(i + 1, word2)
 
-      #if sentence_tokens[0] == 'Ich': import pdb; pdb.set_trace()
-
-      for i, word1 in enumerate(sentence_tokens):
-        if word1 in self.PERFECT_VERB_FORMS:
-          for j, word2 in enumerate(sentence_tokens[i+1:]):
-            j += i+1
-            if word2 in self.GERMAN_CONJUNCTIONS and (word2 == ':' or sentence_tokens[j-1] == ','): break
-            if self._is_verb(word2, pos_map):
-              
-              del sentence_tokens[j]
               # Delete unnecessary reflexive word
               # if sentence_tokens[i + 1] in self.REFLEXIVE_WORDS: 
               #   del sentence_tokens[i + 1]
-              sentence_tokens.insert(i + 1, word2)
-
-      # # Check if sentence ends with verb. Is there a better way to do this?
-      # if self.is_verb(clause_last_word):
-      #   for i in reversed(range(0, len(sentence_tokens) - 1)):
-      #     # Insert the perfect verb after a 'have/was'-form verb.
-      #     if sentence_tokens[i] in self.PERFECT_VERB_FORMS:
-      #       del sentence_tokens[last_word_index]
-      #       # Delete unnecessary reflexive word
-      #       if sentence_tokens[i + 1] in self.REFLEXIVE_WORDS:
-      #         del sentence_tokens[i + 1]
-
-      #       sentence_tokens.insert(i + 1, clause_last_word)
 
     def _get_last_word_index(self, sentence_tokens):
       ''' Get the index of the last word in the list of sentence tokens. '''
