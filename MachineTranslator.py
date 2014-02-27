@@ -5,6 +5,7 @@ import re
 from collections import Counter
 dictionary = eval(open('dictionary.txt').read())
 brown_bigrams = eval(open('bigram_counts.txt').read())
+brown_trigrams = eval(open('trigram_counts.txt').read())
 
 class MachineTranslator:
 
@@ -180,23 +181,28 @@ class MachineTranslator:
 
     ARTICLES_TO_PRUNE = ["the"]
 
+    ARTICLES_FOLLOWING_OF = ["the", "this"]
+
     def __init__(self, tokenized_translations):
       ''' This initialization will be slow because it processes the large
           nltk Brown corpus '''
       self.language_model = [word.lower() for word in nltk.corpus.brown.words()]
       self.bigram_counts = brown_bigrams
+      self.trigram_counts = brown_trigrams
       # self._get_bigram_counts()
 
       # Enforce that all tokens only contain 1 word
       for index, sentence in enumerate(tokenized_translations):
         stringed = " ".join(tokenized_translations[index])
-        tokenized_translations[index] = stringed.split()
+        tokenized_translations[index] = nltk.word_tokenize(stringed)
       self.tokenized_translations = tokenized_translations
 
     def post_process(self):
       '''Takes in a translated, tokenized English corpus and returns a post-processed, tokenized English corpus.'''
       for tokenized_sentence in self.tokenized_translations:
         self._remove_extra_articles(tokenized_sentence)
+        self._add_missing_of(tokenized_sentence)
+        tokenized_sentence[0] = tokenized_sentence[0].capitalize()
       return self.tokenized_translations
 
     # Currently unused. Use code like this to build your own language model.
@@ -208,7 +214,7 @@ class MachineTranslator:
 
     def _remove_extra_articles(self, tokenized_sentence):
       ''' Remove extra instances of the word "the" '''
-      sentence_lower = [word.lower() for word in tokenized_sentence]
+      # TODO: if 'the' is deleted twice, make sure there is no index out of bounds error
       for i in range(1, len(tokenized_sentence) - 1):
         if tokenized_sentence[i] in self.ARTICLES_TO_PRUNE:
           raw_bigram = tokenized_sentence[i].lower() + " " + tokenized_sentence[i + 1].lower()
@@ -219,6 +225,19 @@ class MachineTranslator:
             elif float(self.bigram_counts[pruned_bigram]) / float(self.bigram_counts[raw_bigram]) > 2: # TODO: tune this
               del tokenized_sentence[i]
 
+    def _add_missing_of(self, tokenized_sentence):
+      ''' Add the word 'of' before certain articles if it's missing.
+          Affects dev sentences 6 and 9. '''
+      for i in range(1, len(tokenized_sentence)):
+        print str(i)
+        if tokenized_sentence[i] in self.ARTICLES_FOLLOWING_OF:
+          raw_bigram = tokenized_sentence[i - 1].lower() + " " + tokenized_sentence[i].lower()
+          new_trigram = tokenized_sentence[i - 1].lower() + " of " + tokenized_sentence[i].lower()
+          if new_trigram in self.trigram_counts:
+            if raw_bigram not in self.bigram_counts:
+              tokenized_sentence.insert(i, 'of')
+            elif float(self.trigram_counts[new_trigram]) / float(self.bigram_counts[raw_bigram]) > 2: # TODO: tune this
+              tokenized_sentence.insert(i, 'of')
 
   def __init__(self, infile, outfile):
     self.infile = infile
