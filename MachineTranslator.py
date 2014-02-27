@@ -13,7 +13,7 @@ class MachineTranslator:
     PERFECT_VERB_FORMS = pattern.de.lexeme('haben') + pattern.de.lexeme('werden') + pattern.de.lexeme('sein')
 
     # List of reflexive words that can be omitted. (static class variable)
-    REFLEXIVE_WORDS = ['sich', 'dich', 'euch', 'uns']
+    REFLEXIVE_WORDS = ['sich', 'dich', 'euch', 'uns', 'mich', 'mir', 'dir']
 
     # Regex pattern to distinguish word tokens from punctuation
     WORD_PATTERN = re.compile(r'\w+')
