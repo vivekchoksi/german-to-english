@@ -69,3 +69,10 @@
 
 'betrieben': {'box_translation': u'operated', 'part_of_speech': 'verb'},
 
+ 'abgeleitet': {'alt_translations': ['derivative'],
+                'box_translation': u'derived',
+                'part_of_speech': 'verb'},
+
+'von': {'alt_translations': ['from', 'of', 'by', 'out of', 'about'],
+         'box_translation': u'from',
+         'part_of_speech': 'preposition'},
