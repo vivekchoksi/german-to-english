@@ -111,7 +111,7 @@ class MachineTranslator:
           the perfect verb to the correct place in the sentence. '''
 
       # Don't change verb order if the sentence is a question
-      if sentence_tokens[-1] == '?':
+      if self._declausify(clauses)[-1] == '?':
         return
 
       for sentence_tokens in clauses:
