@@ -33,14 +33,14 @@ class MachineTranslator:
           sentence_tokens = nltk.word_tokenize(sentence)
           pos_map = self._POS_map(sentence)
           clauses = self._clausify(sentence_tokens, pos_map)
-          self._pre_process_sentence(clauses, pos_map)    
+          self._pre_process_sentence(sentence_tokens, clauses, pos_map)    
           result.append(sentence_tokens)
       return result
 
-    def _pre_process_sentence(self, clauses, pos_map):
+    def _pre_process_sentence(self, sentence_tokens, clauses, pos_map):
       if len(sentence_tokens) == 0: return
       self._reorder_verb_subject_in_second_position(sentence_tokens)
-      self._change_perfect_verb_order(clauses, pos_map)
+      self._change_perfect_verb_order(sentence_tokens)
 
     def _POS_map(self, sentence):
       result = {}
