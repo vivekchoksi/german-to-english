@@ -45,11 +45,11 @@
            'box_translation': u'a',
            'part_of_speech': 'article'},
 
- 'eine': {'alt_translations': ['a', 'an', 'one'],
+'eine': {'alt_translations': ['a', 'an', 'one'],
           'box_translation': u'a',
           'part_of_speech': 'article'},
 
- 'einem': {'alt_translations': ['a', 'an', 'one'],
+'einem': {'alt_translations': ['a', 'an', 'one'],
            'box_translation': u'a',
            'part_of_speech': 'article'},
 

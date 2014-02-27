@@ -1,6 +1,7 @@
 import sys
 import nltk
 import pattern.de
+import re
 dictionary = eval(open('dictionary.txt').read())
 
 class MachineTranslator:
@@ -9,7 +10,13 @@ class MachineTranslator:
   class PreProcessor:
 
     # List of words of form "have" or "was/is". (static class variable)
-    perfect_verb_forms = pattern.de.lexeme('haben') + pattern.de.lexeme('werden') + pattern.de.lexeme('sein')
+    PERFECT_VERB_FORMS = pattern.de.lexeme('haben') + pattern.de.lexeme('werden') + pattern.de.lexeme('sein')
+
+    # List of reflexive words that can be omitted. (static class variable)
+    REFLEXIVE_WORDS = ['sich', 'dich', 'euch', 'uns']
+
+    # Regex pattern to distinguish word tokens from punctuation
+    WORD_PATTERN = re.compile(r'\w+')
 
     def __init__(self, infile):
       self.infile = infile
@@ -35,26 +42,38 @@ class MachineTranslator:
 
     # NOTE: method under construction...
     # TODO: Need to find reliable way of identifying perfect verb at end of sentence
-    # TODO: Need to more elegantly get the last word in a sentence
-    # TODO: Create a list of reflexive words like 'sich'
     def _change_perfect_verb_order(self, sentence_tokens):
       ''' Identify German sentences of the form 'The city was in 1170 taken.' and move
           the perfect verb to the correct place in the sentence. '''
-      last_token = sentence_tokens[-2] # get last non-punctuation word. TODO: make robust
-      last_parsed = pattern.de.parse(last_token)
-      #if 'VB/B-VP' in last_parsed:
-      if (('part_of_speech' in dictionary[last_token.lower()].keys() and
-              dictionary[last_token.lower()]['part_of_speech'] == 'verb') or
-              'VB/B-VP' in last_parsed):
-        # Sentence ends with verb
+
+      # Don't change verb order if the sentence is a question
+      if sentence_tokens[-1] == '?':
+        return
+
+      last_word_index = self._get_last_word_index(sentence_tokens)
+      last_word_token = sentence_tokens[last_word_index]
+      last_word_parsed = pattern.de.parse(last_word_token)
+
+      # Check if sentence ends with verb. Is there a better way to do this?
+      if (('part_of_speech' in dictionary[last_word_token.lower()].keys() and
+              dictionary[last_word_token.lower()]['part_of_speech'] == 'verb') or
+              'VB' in last_word_parsed):
         for i in reversed(range(0, len(sentence_tokens) - 1)):
-          if sentence_tokens[i] in self.perfect_verb_forms:
-            # Delete the word 'sich' in this case (meaning 'itself')
-            if sentence_tokens[i + 1] == 'sich':
+          # Insert the perfect verb after a 'have/was'-form verb.
+          if sentence_tokens[i] in self.PERFECT_VERB_FORMS:
+            del sentence_tokens[last_word_index]
+            # Delete unnecessary reflexive word
+            if sentence_tokens[i + 1] in self.REFLEXIVE_WORDS:
               del sentence_tokens[i + 1]
-            # Insert the perfect verb after the 'have/was'-form verb.
-            sentence_tokens.insert(i + 1, last_token)
-            del sentence_tokens[-2]
+
+            sentence_tokens.insert(i + 1, last_word_token)
+
+    def _get_last_word_index(self, sentence_tokens):
+      ''' Get the index of the last word in the list of sentence tokens. '''
+      for i in reversed(range(0, len(sentence_tokens))):
+        if self.WORD_PATTERN.findall(sentence_tokens[i]):
+          return i
+      return False
 
   class PostProcessor:
     def __init__(self, tokenized_translations):
