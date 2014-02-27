@@ -31,17 +31,50 @@ class MachineTranslator:
       with open(self.infile) as f:
         for sentence in f:
           sentence_tokens = nltk.word_tokenize(sentence)
-          self._pre_process_sentence(sentence_tokens)
-          #tagged_sentence = pattern.de.parse(sentence)
-          #tagged_sentence_tokens = nltk.word_tokenize(tagged_sentence)
-          # TODO: something with the tagged_sentence_tokens
+          pos_map = self._POS_map(sentence)
+          clauses = self._clausify(sentence_tokens, pos_map)
+          self._pre_process_sentence(clauses, pos_map)    
           result.append(sentence_tokens)
       return result
 
-    def _pre_process_sentence(self, sentence_tokens):
-      if len(sentence_tokens) == 0:
-        return
-      self._change_perfect_verb_order(sentence_tokens)
+    def _pre_process_sentence(self, clauses, pos_map):
+      if len(sentence_tokens) == 0: return
+      self._change_perfect_verb_order(clauses, pos_map)
+
+    def _POS_map(self, sentence):
+      result = {}
+      tagged_words = pattern.de.parse(sentence)
+
+      # Tag word based on sentence context
+      for tagged_word in tagged_words.split(' '):
+        tag_index = tagged_word.find('/')
+        word = tagged_word[:tag_index]
+        tag = tagged_word[tag_index:]
+        result[word] = tag
+
+      # For missing tags, tag directly
+      for word in nltk.word_tokenize(sentence):
+        if word not in result:
+          result[word] = pattern.de.parse(word)
+
+      return result
+
+
+    def _clausify(self, sentence_tokens, pos_map):
+
+      result = []
+      last = 0
+      for i, word in enumerate(sentence_tokens):
+        is_prev_comma = i>0 and sentence_tokens[i-1] == ','
+
+        is_conjuction = (word in self.GERMAN_CONJUNCTIONS) or ('WDT' in pos_map[word])
+        if (word in (':', ';')) or (is_conjuction and is_prev_comma):
+          result.append(sentence_tokens[last:i])
+          last = i
+      result.append(sentence_tokens[last:len(sentence_tokens)])
+
+      return result
+
 
     # NOTE: method under construction...
     # TODO: Need to find reliable way of identifying perfect verb at end of sentence
