@@ -2,13 +2,16 @@ bevor
 ehe
 nachdem
 während
-seit, seitdem
+seit
+seitdem
 bis
 als
 wenn
 wann
 obwohl
-als ob, als wenn, als
+als ob
+als wenn
+als
 solange
 sooft
 sobald
@@ -18,7 +21,6 @@ indem
 wenn
 ob
 falls
-um...zu
 damit
 so dass
 dass
