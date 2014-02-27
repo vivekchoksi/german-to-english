@@ -2,13 +2,11 @@ import sys
 import nltk
 import pattern.de
 import re
-from collections import Counter
 dictionary = eval(open('dictionary.txt').read())
 brown_bigrams = eval(open('bigram_counts.txt').read())
 brown_trigrams = eval(open('trigram_counts.txt').read())
 
 class MachineTranslator:
-
 
   class PreProcessor:
 
@@ -205,13 +203,6 @@ class MachineTranslator:
         tokenized_sentence[0] = tokenized_sentence[0].capitalize()
       return self.tokenized_translations
 
-    # Currently unused. Use code like this to build your own language model.
-    def _get_bigram_counts(self):
-      ''' Get counts for all bigrams in the brown corpus. '''
-      brown_lowercase = nltk.bigrams(self.language_model)
-      bigram_list = [" ".join(bi) for bi in brown_lowercase]
-      self.bigram_counts = Counter(bigram_list)
-
     def _remove_extra_articles(self, tokenized_sentence):
       ''' Remove extra instances of the word "the" '''
       # TODO: if 'the' is deleted twice, make sure there is no index out of bounds error
@@ -219,6 +210,8 @@ class MachineTranslator:
         if tokenized_sentence[i] in self.ARTICLES_TO_PRUNE:
           raw_bigram = tokenized_sentence[i].lower() + " " + tokenized_sentence[i + 1].lower()
           pruned_bigram = tokenized_sentence[i - 1].lower() + " " + tokenized_sentence[i + 1].lower()
+
+          # If the new form (i.e. without 'and') is significantly more probable, then change the translation
           if pruned_bigram in self.bigram_counts:
             if raw_bigram not in self.bigram_counts:
               del tokenized_sentence[i]
@@ -229,10 +222,11 @@ class MachineTranslator:
       ''' Add the word 'of' before certain articles if it's missing.
           Affects dev sentences 6 and 9. '''
       for i in range(1, len(tokenized_sentence)):
-        print str(i)
         if tokenized_sentence[i] in self.ARTICLES_FOLLOWING_OF:
           raw_bigram = tokenized_sentence[i - 1].lower() + " " + tokenized_sentence[i].lower()
           new_trigram = tokenized_sentence[i - 1].lower() + " of " + tokenized_sentence[i].lower()
+
+          # If the new form (i.e. with 'of') is significantly more probable, then change the translation
           if new_trigram in self.trigram_counts:
             if raw_bigram not in self.bigram_counts:
               tokenized_sentence.insert(i, 'of')
