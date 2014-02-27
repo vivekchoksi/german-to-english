@@ -78,7 +78,7 @@ class MachineTranslator:
 
 
     # NOTE method under construction... (Chris)
-    def _reorder_verb_subject_in_second_position(self, clauses):
+    def _reorder_verb_subject_in_second_position(self, clauses, pos_map):
       # when some form of time is in the beginning of the sentence: "heute habe ich meine Hausaufgaben gemacht" -> "I did my homework today"
       for clause_tokens in clauses:
         for i in range(1, len(clause_tokens)):
@@ -102,7 +102,15 @@ class MachineTranslator:
                   clause_tokens.insert(j, verb)
                   break
 
-
+    def _reorder_adjective_phrases(self, clauses, pos_map):
+      for clause in clauses:
+        clause_string = " ".join(clause)
+        # print clause_string
+        tree = pattern.de.parsetree(clause_string)
+        for chunk in tree.chunks:
+          if "ADJP" in chunk.type:
+            for word in chunk.words:
+              # TODO: move words
     # NOTE: method under construction...
     # TODO: Need to find reliable way of identifying perfect verb at end of sentence
     def _change_perfect_verb_order(self, clauses, pos_map):
