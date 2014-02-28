@@ -126,23 +126,23 @@ class MachineTranslator:
     def _reorder_adjective_phrases(self, clauses, pos_map):
       for clause in clauses:
         clause_string = " ".join(clause)
-        # print clause_string
         tree = pattern.de.parsetree(clause_string)
         for index, chunk in enumerate(tree[0].chunks):
           if "ADJP" in chunk.type or "ADVP" in chunk.type:
+            print chunk
             index = 0
             for i, word in enumerate(clause):
               if word.decode('utf-8') in chunk.words[0].string:
-                index = i 
-                for i in range(0, len(chunk.words)):
-                  del clause[index]
+                index = i
+                for j in range(0, len(chunk.words)):
+                  del clause[i]
                 break
             for i in range(0, index):
               if self._is_verb(clause[i], pos_map):
-                # print clause[1]
                 for word in reversed(chunk.words):
                   clause.insert(i, word.string)
                 break
+              
 
 
     def _relative_clause_reordering(self, clauses, pos_map):
