@@ -1,5 +1,0 @@
-PyYAML==3.10
-argparse==1.2.1
-nltk==2.0.4
-translate==0.0.4
-wsgiref==0.1.2
