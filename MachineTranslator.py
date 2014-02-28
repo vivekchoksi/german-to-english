@@ -44,6 +44,7 @@ class MachineTranslator:
       self._change_perfect_verb_order(clauses, pos_map)
       self._reorder_adjective_phrases(clauses, pos_map)
       self._delete_reflexive_words(clauses, pos_map)
+      self._relative_clause_reordering(clauses, pos_map)
 
     def _POS_map(self, sentence):
       result = {}
@@ -109,7 +110,6 @@ class MachineTranslator:
                   del clause_tokens[i]
                   clause_tokens.insert(j, verb)
                   break
-      # print clauses
 
     def _reorder_adjective_phrases(self, clauses, pos_map):
       for clause in clauses:
@@ -132,6 +132,17 @@ class MachineTranslator:
                 for word in reversed(chunk.words):
                   clause.insert(i, word.string)
                 break
+    def _relative_clause_reordering(self, clauses, pos_map):
+      for clause in clauses:
+        for i in range(0, len(clause)):
+          if self._is_article(clause[i], pos_map) and (not self._is_adjective(clause[i+1], pos_map) or not self._is_noun(clause[i+1], pos_map)):
+            print clause
+            for i, word in enumerate(reversed(clause)):
+              if self.self._is_verb(word):
+                verb = word
+                del clause[-i]
+                clause.insert(1, verb)
+
 
     def _delete_reflexive_words(self, clauses, pos_map):
       ''' Delete unnecessary reflexive words '''
@@ -174,6 +185,12 @@ class MachineTranslator:
 
     def _is_pronoun(self, word, pos_map):
       return (dictionary[word.lower()].get('part_of_speech', None) == 'pronoun') or ('PRP' in pos_map[word])
+
+    def _is_article(self, word, pos_map):
+      return (dictionary[word.lower()].get('part_of_speech', None) == 'article') or ('DT' in pos_map[word])
+
+    def _is_adjective(self, word, pos_map):
+      return (dictionary[word.lower()].get('part_of_speech', None) != 'adjective') or ('JJ' in pos_map[word])
 
   class PostProcessor:
 
