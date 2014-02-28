@@ -16,11 +16,17 @@ class MachineTranslator:
     # List of reflexive words that can be omitted. (static class variable)
     REFLEXIVE_WORDS = ['sich', 'dich', 'euch', 'uns', 'mich', 'mir', 'dir']
 
+    # List of relative pronouns
+    RELATIVE_PRONOUNS = ['die', 'der', 'das', 'dessen', 'den', 'dem', 'denen', 'deren']
+
     # Regex pattern to distinguish word tokens from punctuation
     WORD_PATTERN = re.compile(r'\w+')
 
     # List of german conjunctions
     GERMAN_CONJUNCTIONS = set(open('german_conjunctions.txt').read().split('\n'))
+
+    # List of german relative pronouns
+    GERMAN_RELATIVE_PRONOUNS = set(open('german_rel_pron.txt').read().split('\n'))
 
     def __init__(self, infile):
       self.infile = infile
@@ -44,6 +50,7 @@ class MachineTranslator:
       self._change_perfect_verb_order(clauses, pos_map)
       self._reorder_adjective_phrases(clauses, pos_map)
       self._delete_reflexive_words(clauses, pos_map)
+      self._relative_clause_reordering(clauses, pos_map)
 
     def _POS_map(self, sentence):
       result = {}
@@ -65,19 +72,21 @@ class MachineTranslator:
 
 
     def _clausify(self, sentence_tokens, pos_map):
-
       result = []
       last = 0
       for i, word in enumerate(sentence_tokens):
+        next = sentence_tokens[i+1] if i<len(sentence_tokens)-1 else None
         is_prev_comma = i>0 and sentence_tokens[i-1] == ','
-
-        is_conjuction = (word in self.GERMAN_CONJUNCTIONS) or ('WDT' in pos_map[word])
+        is_conjuction = (word in self.GERMAN_CONJUNCTIONS)
+        is_relative = ('WDT' in pos_map[word]) or ((word in self.GERMAN_RELATIVE_PRONOUNS) and next and not (self._is_adjective(next, pos_map) or self._is_noun(next, pos_map)))
         if (word in (':', ';')) or (is_conjuction and is_prev_comma):
           result.append(sentence_tokens[last:i])
           result.append(sentence_tokens[i:i+1])
           last = i+1
+        elif is_relative:
+          result.append(sentence_tokens[last:i])
+          last = i
       result.append(sentence_tokens[last:len(sentence_tokens)])
-
       return result
 
     def _declausify(self, clauses):
@@ -89,7 +98,7 @@ class MachineTranslator:
       if self._declausify(clauses)[-1] == '?':
         return
       for clause_tokens in clauses:
-        for i in range(1, len(clause_tokens)):
+        for i in range(1, len(clause_tokens)-1):
           if self._is_verb(clause_tokens[i], pos_map):
             if self._is_pronoun(clause_tokens[i-1], pos_map): 
               break
@@ -109,7 +118,6 @@ class MachineTranslator:
                   del clause_tokens[i]
                   clause_tokens.insert(j, verb)
                   break
-      # print clauses
 
     def _reorder_adjective_phrases(self, clauses, pos_map):
       for clause in clauses:
@@ -132,6 +140,22 @@ class MachineTranslator:
                 for word in reversed(chunk.words):
                   clause.insert(i, word.string)
                 break
+
+
+    def _relative_clause_reordering(self, clauses, pos_map):
+      for clause in clauses:
+        # print clause
+        for i in range(0, len(clause)-1):
+          if clause[i] in self.RELATIVE_PRONOUNS and not (self._is_adjective(clause[i+1], pos_map) or self._is_noun(clause[i+1], pos_map)):
+            # print clause
+            for j, word in enumerate(reversed(clause)):
+              # print word
+              if self._is_verb(word, pos_map):
+                verb = word
+                del clause[-j-1]
+                clause.insert(i+1, verb)
+                break
+
 
     def _delete_reflexive_words(self, clauses, pos_map):
       ''' Delete unnecessary reflexive words '''
@@ -174,6 +198,12 @@ class MachineTranslator:
 
     def _is_pronoun(self, word, pos_map):
       return (dictionary[word.lower()].get('part_of_speech', None) == 'pronoun') or ('PRP' in pos_map[word])
+
+    def _is_article(self, word, pos_map):
+      return (dictionary[word.lower()].get('part_of_speech', None) == 'article') or ('DT' in pos_map[word])
+
+    def _is_adjective(self, word, pos_map):
+      return (dictionary[word.lower()].get('part_of_speech', None) == 'adjective') or ('JJ' in pos_map[word])
 
   class PostProcessor:
 
