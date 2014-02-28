@@ -446,7 +446,7 @@
  'sagen': {'alt_translations': ['say', 'tell', 'utter', 'speak', 'mean'],
            'box_translation': u'say',
            'part_of_speech': 'verb'},
- 'schauspielausbildung': {'box_translation': u'Acting training'},
+ 'schauspielausbildung': {'box_translation': u'acting training'},
  'sechs': {'alt_translations': ['six'],
            'box_translation': u'six',
            'part_of_speech': ''},
