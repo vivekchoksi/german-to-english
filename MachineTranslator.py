@@ -22,6 +22,9 @@ class MachineTranslator:
     # List of german conjunctions
     GERMAN_CONJUNCTIONS = set(open('german_conjunctions.txt').read().split('\n'))
 
+    # List of german relative pronouns
+    GERMAN_RELATIVE_PRONOUNS = set(open('german_rel_pron.txt').read().split('\n'))
+
     def __init__(self, infile):
       self.infile = infile
 
@@ -33,6 +36,7 @@ class MachineTranslator:
         for sentence in f:
           sentence_tokens = nltk.word_tokenize(sentence)
           pos_map = self._POS_map(sentence)
+          import pdb; pdb.set_trace()
           clauses = self._clausify(sentence_tokens, pos_map)
           self._pre_process_sentence(clauses, pos_map)    
           result.append(self._declausify(clauses))
