@@ -1,7 +1,9 @@
+# -*- coding: latin-1 -*-
 import sys
 import nltk
 import pattern.de
 import re
+import pdb
 dictionary = eval(open('dictionary.txt').read())
 brown_bigrams = eval(open('bigram_counts.txt').read())
 brown_trigrams = eval(open('trigram_counts.txt').read())
@@ -46,11 +48,13 @@ class MachineTranslator:
 
     def _pre_process_sentence(self, clauses, pos_map):
       if len(clauses) == 0: return
+      # pdb.set_trace()
       self._reorder_verb_subject_in_second_position(clauses, pos_map)
       self._change_perfect_verb_order(clauses, pos_map)
+      self._relative_clause_reordering(clauses, pos_map)
       self._reorder_adjective_phrases(clauses, pos_map)
       self._delete_reflexive_words(clauses, pos_map)
-      self._relative_clause_reordering(clauses, pos_map)
+      
 
     def _POS_map(self, sentence):
       result = {}
@@ -125,11 +129,10 @@ class MachineTranslator:
         # print clause_string
         tree = pattern.de.parsetree(clause_string)
         for index, chunk in enumerate(tree[0].chunks):
-          if "ADJP" in chunk.type:
-            # print chunk
+          if "ADJP" in chunk.type or "ADVP" in chunk.type:
             index = 0
             for i, word in enumerate(clause):
-              if word in chunk.words[0].string:
+              if word.decode('utf-8') in chunk.words[0].string:
                 index = i 
                 for i in range(0, len(chunk.words)):
                   del clause[index]
@@ -147,14 +150,13 @@ class MachineTranslator:
         # print clause
         for i in range(0, len(clause)-1):
           if clause[i] in self.RELATIVE_PRONOUNS and not (self._is_adjective(clause[i+1], pos_map) or self._is_noun(clause[i+1], pos_map)):
-            # print clause
             for j, word in enumerate(reversed(clause)):
-              # print word
               if self._is_verb(word, pos_map):
                 verb = word
                 del clause[-j-1]
                 clause.insert(i+1, verb)
                 break
+            break
 
 
     def _delete_reflexive_words(self, clauses, pos_map):
