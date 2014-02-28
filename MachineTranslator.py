@@ -39,7 +39,6 @@ class MachineTranslator:
         for sentence in f:
           sentence_tokens = nltk.word_tokenize(sentence)
           pos_map = self._POS_map(sentence)
-          import pdb; pdb.set_trace()
           clauses = self._clausify(sentence_tokens, pos_map)
           self._pre_process_sentence(clauses, pos_map)    
           result.append(self._declausify(clauses))
@@ -73,20 +72,21 @@ class MachineTranslator:
 
 
     def _clausify(self, sentence_tokens, pos_map):
-
       result = []
       last = 0
       for i, word in enumerate(sentence_tokens):
-        is_prev_comma = i>0 and sentence_tokens[i] == ','
-
-        is_conjuction = (word in self.GERMAN_CONJUNCTIONS) or ('WDT' in pos_map[word])
-        is_relative = (word in self.GERMAN_RELATIVE_PRONOUNS) and (sentence_tokens[i+1])
+        next = sentence_tokens[i+1] if i<len(sentence_tokens)-1 else None
+        is_prev_comma = i>0 and sentence_tokens[i-1] == ','
+        is_conjuction = (word in self.GERMAN_CONJUNCTIONS)
+        is_relative = ('WDT' in pos_map[word]) or ((word in self.GERMAN_RELATIVE_PRONOUNS) and next and not (self._is_adjective(next, pos_map) or self._is_noun(next, pos_map)))
         if (word in (':', ';')) or (is_conjuction and is_prev_comma):
           result.append(sentence_tokens[last:i])
           result.append(sentence_tokens[i:i+1])
           last = i+1
+        elif is_relative:
+          result.append(sentence_tokens[last:i])
+          last = i
       result.append(sentence_tokens[last:len(sentence_tokens)])
-
       return result
 
     def _declausify(self, clauses):
@@ -98,7 +98,7 @@ class MachineTranslator:
       if self._declausify(clauses)[-1] == '?':
         return
       for clause_tokens in clauses:
-        for i in range(1, len(clause_tokens)):
+        for i in range(1, len(clause_tokens)-1):
           if self._is_verb(clause_tokens[i], pos_map):
             if self._is_pronoun(clause_tokens[i-1], pos_map): 
               break
@@ -140,6 +140,8 @@ class MachineTranslator:
                 for word in reversed(chunk.words):
                   clause.insert(i, word.string)
                 break
+
+
     def _relative_clause_reordering(self, clauses, pos_map):
       for clause in clauses:
         # print clause
