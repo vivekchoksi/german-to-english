@@ -76,6 +76,7 @@ class MachineTranslator:
         is_prev_comma = i>0 and sentence_tokens[i-1] == ','
 
         is_conjuction = (word in self.GERMAN_CONJUNCTIONS) or ('WDT' in pos_map[word])
+        is_relative = (word in self.GERMAN_RELATIVE_PRONOUNS) and (sentence_tokens[i+1])
         if (word in (':', ';')) or (is_conjuction and is_prev_comma):
           result.append(sentence_tokens[last:i])
           result.append(sentence_tokens[i:i+1])
